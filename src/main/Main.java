@@ -1,16 +1,16 @@
 package main;
 
-import symulator.DaneSymulacji;
-import symulator.Symulator;
+import symulator.SimulationData;
+import symulator.Simulator;
 
 public class Main {
     public static void main(String[] args) {
-        DaneSymulacji dane = new DaneSymulacji();
-        dane.wczytaj();
-        dane.wypisz();
+        SimulationData data = new SimulationData();
+        data.read();
+        data.print();
         System.out.println();
-        Symulator symulator = new Symulator(dane);
-        symulator.symuluj();
-        symulator.wypiszStatystyki();
+        Simulator simulator = new Simulator(data);
+        simulator.simulate();
+        simulator.printStatistics();
     }
 }

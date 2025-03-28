@@ -1,16 +1,16 @@
 package symulator;
 
-public class PrzyjazdPojazdu extends Wydarzenie {
+public class PrzyjazdPojazdu extends Event {
 
-    private final Pojazd pojazd;
+    private final Vehicle vehicle;
 
-    public PrzyjazdPojazdu(Czas czas, Pojazd pojazd) {
-        super(czas);
-        this.pojazd = pojazd;
+    public PrzyjazdPojazdu(Time time, Vehicle vehicle) {
+        super(time);
+        this.vehicle = vehicle;
     }
 
     @Override
-    public void symuluj(KolejkaWydarzeń kolejka) {
-        pojazd.przyjedźNaPrzystanek(kolejka, czas());
+    public void simulate(EventsQueue queue) {
+        vehicle.przyjedźNaPrzystanek(queue, time());
     }
 }

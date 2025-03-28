@@ -4,20 +4,20 @@ public class StatystykiDzienne extends Statystyki {
 
     private final int numerDnia;
 
-    public StatystykiDzienne(int numerDnia, Pojazd[] pojazdy, Pasażer[] pasażerowie) {
+    public StatystykiDzienne(int numerDnia, Vehicle[] pojazdy, Passenger[] pasażerowie) {
         this.numerDnia = numerDnia;
 
         int czasOczekiwania = 0;
         int liczbaCzekających = 0;
         int liczbaPrzejazdów = 0;
 
-        for (Pojazd pojazd : pojazdy) {
-            liczbaPrzejazdów += pojazd.dziennaLiczbaPrzejazdów();
+        for (Vehicle vehicle : pojazdy) {
+            liczbaPrzejazdów += vehicle.dziennaLiczbaPrzejazdów();
         }
 
-        for (Pasażer pasażer : pasażerowie) {
-            czasOczekiwania += pasażer.dziennyCzasCzekania();
-            liczbaCzekających += pasażer.ileRazyDziśCzekałNaPrzystanku();
+        for (Passenger passenger : pasażerowie) {
+            czasOczekiwania += passenger.dziennyCzasCzekania();
+            liczbaCzekających += passenger.ileRazyDziśCzekałNaPrzystanku();
         }
 
         ustaw(czasOczekiwania, liczbaCzekających, liczbaPrzejazdów);

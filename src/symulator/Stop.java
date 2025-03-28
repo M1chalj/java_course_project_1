@@ -1,12 +1,12 @@
 package symulator;
 
-public class Przystanek implements Comparable<Przystanek> {
+public class Stop implements Comparable<Stop> {
     private final String nazwa;
     private final int pojemność;
 
     private final ZbiórPasażerów pasażerowie;
 
-    public Przystanek(String nazwa, int pojemność) {
+    public Stop(String nazwa, int pojemność) {
         this.nazwa = nazwa;
         this.pojemność = pojemność;
         pasażerowie = new TablicowyZbiórPasażerów(pojemność);
@@ -18,11 +18,11 @@ public class Przystanek implements Comparable<Przystanek> {
     }
 
     @Override
-    public int compareTo(Przystanek p) {
+    public int compareTo(Stop p) {
         return nazwa.compareTo(p.nazwa);
     }
 
-    public boolean jestMiejsce() {
+    public boolean isFreeSpace() {
         return pasażerowie.rozmiar() < pojemność;
     }
 
@@ -30,12 +30,12 @@ public class Przystanek implements Comparable<Przystanek> {
         return pasażerowie.pusty();
     }
 
-    public void dodajPasażera(Pasażer pasażer) {
-        assert jestMiejsce() : "dodanie pasażera do pełnego przystanku";
-        pasażerowie.dodaj(pasażer);
+    public void addPassenger(Passenger passenger) {
+        assert isFreeSpace() : "dodanie pasażera do pełnego przystanku";
+        pasażerowie.dodaj(passenger);
     }
 
-    public Pasażer usuńPasażera() {
+    public Passenger usuńPasażera() {
         assert !pusty() : "usunięcie pasażera z pustego przystanku";
         return pasażerowie.wyjmij();
     }

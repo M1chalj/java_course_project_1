@@ -4,7 +4,7 @@ public class StatystykiSumaryczne extends Statystyki {
 
     private final int liczbaDni;
 
-    public StatystykiSumaryczne(int liczbaDni, Pojazd[] pojazdy, Pasażer[] pasażerowie) {
+    public StatystykiSumaryczne(int liczbaDni, Vehicle[] pojazdy, Passenger[] pasażerowie) {
 
         this.liczbaDni = liczbaDni;
 
@@ -12,13 +12,13 @@ public class StatystykiSumaryczne extends Statystyki {
         int liczbaCzekających = 0;
         int liczbaPrzejazdów = 0;
 
-        for (Pojazd pojazd : pojazdy) {
-            liczbaPrzejazdów += pojazd.sumarycznaLiczbaPrzejazdów();
+        for (Vehicle vehicle : pojazdy) {
+            liczbaPrzejazdów += vehicle.sumarycznaLiczbaPrzejazdów();
         }
 
-        for (Pasażer pasażer : pasażerowie) {
-            czasOczekiwania += pasażer.sumarycznyCzasCzekania();
-            liczbaCzekających += pasażer.ileRazySumarycznieCzekałNaPrzystanku();
+        for (Passenger passenger : pasażerowie) {
+            czasOczekiwania += passenger.sumarycznyCzasCzekania();
+            liczbaCzekających += passenger.ileRazySumarycznieCzekałNaPrzystanku();
         }
 
         ustaw(czasOczekiwania, liczbaCzekających, liczbaPrzejazdów);

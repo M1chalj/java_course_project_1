@@ -2,12 +2,12 @@ package symulator;
 
 import java.util.Arrays;
 
-public class Trasa {
-    private final Przystanek[] przystanki;
+public class Route {
+    private final Stop[] przystanki;
     private final int[] czasy;
     private final int całkowityCzasPrzejazdu;
 
-    public Trasa(Przystanek[] przystanki, int[] czasy) {
+    public Route(Stop[] przystanki, int[] czasy) {
         assert przystanki.length == czasy.length : "niepoprawne tablice wejściowe";
 
         this.przystanki = Arrays.copyOf(przystanki, przystanki.length);
@@ -20,7 +20,7 @@ public class Trasa {
         this.całkowityCzasPrzejazdu = czasPrzejazdu * 2;
     }
 
-    public Przystanek przystanek(int n) {
+    public Stop przystanek(int n) {
         return przystanki[n];
     }
 
@@ -36,7 +36,7 @@ public class Trasa {
         return przystanki.length;
     }
 
-    public int całkowityCzasPrzejazdu() {
+    public int totalTravelTime() {
         return całkowityCzasPrzejazdu;
     }
 
@@ -60,7 +60,7 @@ public class Trasa {
         }
     }
 
-    public void wypiszDane() {
+    public void printData() {
         System.out.println("Liczba przystanków: " + liczbaPrzystanków());
         for (int i = 0; i < przystanki.length; i++) {
             if (i != 0) {

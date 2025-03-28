@@ -1,9 +1,9 @@
 package symulator;
 
 public interface ZbiórPasażerów {
-    void dodaj(Pasażer pasażer);
+    void dodaj(Passenger passenger);
 
-    Pasażer wyjmij();
+    Passenger wyjmij();
 
     boolean pusty();
 

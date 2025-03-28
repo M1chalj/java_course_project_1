@@ -4,11 +4,11 @@ import java.util.Arrays;
 
 public class TablicowyZbiórPasażerów implements ZbiórPasażerów {
 
-    private Pasażer[] t;
+    private Passenger[] t;
     private int ile;
 
     public TablicowyZbiórPasażerów(int pojemnośćPoczątkowa) {
-        t = new Pasażer[pojemnośćPoczątkowa];
+        t = new Passenger[pojemnośćPoczątkowa];
         ile = 0;
     }
 
@@ -17,21 +17,21 @@ public class TablicowyZbiórPasażerów implements ZbiórPasażerów {
     }
 
     @Override
-    public void dodaj(Pasażer pasażer) {
+    public void dodaj(Passenger passenger) {
         if (t.length == ile) {
             powiększ();
         }
-        t[ile++] = pasażer;
+        t[ile++] = passenger;
     }
 
     @Override
-    public Pasażer wyjmij() {
+    public Passenger wyjmij() {
         assert !pusty() : "Wyjęcie z pustego zbioru";
-        Pasażer pasażer = t[--ile];
+        Passenger passenger = t[--ile];
         if (ile * 2 < t.length / 2) {
             pomniejsz();
         }
-        return pasażer;
+        return passenger;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class TablicowyZbiórPasażerów implements ZbiórPasażerów {
     @Override
     public void opróżnij() {
         ile = 0;
-        t = new Pasażer[0];
+        t = new Passenger[0];
     }
 
     private void powiększ() {

@@ -1,9 +1,9 @@
 package symulator;
 
-public class Tramwaj extends Pojazd {
+public class Tramwaj extends Vehicle {
 
-    public Tramwaj(Linia linia, int pojemność) {
-        super(linia, pojemność);
+    public Tramwaj(Line line, int pojemność) {
+        super(line, pojemność);
     }
 
     @Override
