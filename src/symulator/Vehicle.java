@@ -2,34 +2,34 @@ package symulator;
 
 public abstract class Vehicle {
     private static final Hour LAST_DEPARTURE_HOUR = new Hour(23, 0);
-    private static int licznikPojazdów;
+    private static int VehiclesCounter;
 
-    private final int numerBoczny;
+    private final int number;
     private final Line line;
 
-    private final int pojemność;
-    private final ZbiórPasażerów[] pasażerowie;
-    //pasażerowie[i] - zbiór pasażerów chcących wysiąść na i-tym przystanku
+    private final int capacity;
+    private final PassengersSet[] passengers;
+    // passengers[i] = set of passengers who want to get off at stop i
 
-    private int ilePasażerów;
+    private int numberOfPassengers;
 
-    private int przystanekPoczątkowy;
-    private boolean aktualnyKierunek;
-    private int aktualnyPrzystanek;
+    private int firstStop;
+    private boolean currentDirection;
+    private int currentStop;
 
-    private int dziennaLiczbaPrzejazdów;
-    private int sumarycznaLiczbaPrzejazdów;
+    private int dailyNumberOfRides;
+    private int totalNumberOfRides;
 
-    public Vehicle(Line line, int pojemność) {
+    public Vehicle(Line line, int capacity) {
         this.line = line;
-        this.pojemność = pojemność;
-        numerBoczny = licznikPojazdów++;
-        sumarycznaLiczbaPrzejazdów = 0;
+        this.capacity = capacity;
+        number = VehiclesCounter++;
+        totalNumberOfRides = 0;
 
-        ilePasażerów = 0;
-        pasażerowie = new TablicowyZbiórPasażerów[line.route().liczbaPrzystanków()];
-        for (int i = 0; i < pasażerowie.length; i++) {
-            pasażerowie[i] = new TablicowyZbiórPasażerów();
+        numberOfPassengers = 0;
+        passengers = new PassengersArraySet[line.route().numberOfStops()];
+        for (int i = 0; i < passengers.length; i++) {
+            passengers[i] = new PassengersArraySet();
         }
 
         line.addVehicle(this);
@@ -37,112 +37,114 @@ public abstract class Vehicle {
 
     @Override
     public String toString() {
-        return line.toString() + ", nr boczny " + numerBoczny;
+        return line.toString() + ", no " + number;
     }
 
-    public boolean jestMiejsce() {
-        return ilePasażerów < pojemność;
+    public boolean isFreeSpace() {
+        return numberOfPassengers < capacity;
     }
 
-    public void dodajPasażera(Passenger passenger, int przystanek) {
-        assert jestMiejsce() : "dodanie pasażera do pełnego pojazdu";
-        pasażerowie[przystanek].dodaj(passenger);
-        ilePasażerów++;
-        dziennaLiczbaPrzejazdów++;
+    public void addPassenger(Passenger passenger, int stop) {
+        assert isFreeSpace() : "adding passenger to full vehicle";
+        passengers[stop].add(passenger);
+        numberOfPassengers++;
+        dailyNumberOfRides++;
     }
 
-    private Passenger usuńPasażera(int przystanek) {
-        assert ilePasażerów > 0 : "usunięcie pasażera z pustego pojazdu";
-        ilePasażerów--;
-        return pasażerowie[przystanek].wyjmij();
+    private Passenger deletePassenger(int stop) {
+        assert numberOfPassengers > 0 : "deleting passenger from empty vehicle";
+        numberOfPassengers--;
+        return passengers[stop].get();
     }
 
-    public int ilePrzystankówDoKońca() {//zwraca liczbę pozostałych przystanków do pętli
-        if (aktualnyKierunek) {
-            return line.route().liczbaPrzystanków() - aktualnyPrzystanek - 1;
+    // returns number of stops to the end of the route in the current direction
+    public int stopsToEnd() {
+        if (currentDirection) {
+            return line.route().numberOfStops() - currentStop - 1;
         } else {
-            return aktualnyPrzystanek;
+            return currentStop;
         }
     }
-
-    public int któryPrzystanekZa(int ile) {//zwraca numer przystanku za <ile> przystanków
-        assert ile < ilePrzystankówDoKońca() : "Niepoprawny argument";
-        return aktualnyPrzystanek + (aktualnyKierunek ? ile : -ile);
+    
+    // returns number of stop after k stops
+    public int whichStopAfter(int k) {
+        assert k < stopsToEnd() : "Invalid argument";
+        return currentStop + (currentDirection ? k : -k);
     }
 
-    public Stop przystanek(int numer) {
-        return line.route().przystanek(numer);
+    public Stop stop(int number) {
+        return line.route().stop(number);
     }
 
-    public void beginDay(EventsQueue kolejka, int dzień,
-                         boolean kierunek, Hour departureHour) {
-        przystanekPoczątkowy = line.route().przystanekPoczątkowy(kierunek);
-        aktualnyPrzystanek = przystanekPoczątkowy;
-        aktualnyKierunek = kierunek;
-        dziennaLiczbaPrzejazdów = 0;
-        Time timePrzyjazdu = new Time(dzień, departureHour);
-        kolejka.add(new PrzyjazdPojazdu(timePrzyjazdu, this));
+    public void beginDay(EventsQueue queue, int day,
+                         boolean direction, Hour departureHour) {
+        firstStop = line.route().firstStop(direction);
+        currentStop = firstStop;
+        currentDirection = direction;
+        dailyNumberOfRides = 0;
+        Time arrivalTime = new Time(day, departureHour);
+        queue.add(new VehicleArrival(arrivalTime, this));
     }
 
-    private void wypuśćPasażerów(Time time) {
-        Stop stop = line.route().przystanek(aktualnyPrzystanek);
-        while (stop.isFreeSpace() && !pasażerowie[aktualnyPrzystanek].pusty()) {
-            Passenger passenger = usuńPasażera(aktualnyPrzystanek);
+    private void letPassengersGo(Time time) {
+        Stop stop = line.route().stop(currentStop);
+        while (stop.isFreeSpace() && !passengers[currentStop].empty()) {
+            Passenger passenger = deletePassenger(currentStop);
             passenger.goToStop(time, stop);
         }
     }
 
-    private void wpuśćPasażerów(Time time) {
-        Stop stop = line.route().przystanek(aktualnyPrzystanek);
-        while (jestMiejsce() && !stop.pusty()) {
-            Passenger passenger = stop.usuńPasażera();
+    private void letPassengersIn(Time time) {
+        Stop stop = line.route().stop(currentStop);
+        while (isFreeSpace() && !stop.empty()) {
+            Passenger passenger = stop.deletePassenger();
             passenger.enterVehicle(time, this);
         }
     }
 
-    public void przyjedźNaPrzystanek(EventsQueue kolejka, Time time) {
+    public void arriveAtStop(EventsQueue queue, Time time) {
         Route route = line.route();
 
-        System.out.println(time + ": " + this + " przyjechał na " +
-                route.przystanek(aktualnyPrzystanek));
+        System.out.println(time + ": " + this + " arrived at " +
+                route.stop(currentStop));
 
-        if (aktualnyPrzystanek != route.przystanekPoczątkowy(aktualnyKierunek)) {
-            wypuśćPasażerów(time);
+        if (currentStop != route.firstStop(currentDirection)) {
+            letPassengersGo(time);
         }
-        if (aktualnyPrzystanek != route.przystanekKońcowy(aktualnyKierunek)) {
-            wpuśćPasażerów(time);
+        if (currentStop != route.lastStop(currentDirection)) {
+            letPassengersIn(time);
         }
 
-        int następnyPrzystanek = route.następnyPrzystanek(aktualnyPrzystanek, aktualnyKierunek);
-        Time przyjazdNaNastępny = time.add(
-                route.czasPrzejazduNaNastępny(aktualnyPrzystanek, aktualnyKierunek));
+        int nextStop = route.nextStop(currentStop, currentDirection);
+        Time arrivalToNextStop = time.add(
+                route.timeToNextStop(currentStop, currentDirection));
 
-        if (aktualnyPrzystanek != route.przystanekKońcowy(aktualnyKierunek) ||
-                aktualnyPrzystanek != przystanekPoczątkowy ||
-                przyjazdNaNastępny.compareTo(
+        if (currentStop != route.lastStop(currentDirection) ||
+                currentStop != firstStop ||
+                arrivalToNextStop.compareTo(
                         new Time(time.day(), LAST_DEPARTURE_HOUR)) <= 0) {
-            kolejka.add(new PrzyjazdPojazdu(przyjazdNaNastępny, this));
+            queue.add(new VehicleArrival(arrivalToNextStop, this));
         }
 
-        if (aktualnyPrzystanek == route.przystanekKońcowy(aktualnyKierunek)) {
-            aktualnyKierunek = !aktualnyKierunek;
+        if (currentStop == route.lastStop(currentDirection)) {
+            currentDirection = !currentDirection;
         }
-        aktualnyPrzystanek = następnyPrzystanek;
+        currentStop = nextStop;
     }
 
-    public void zakończDzień() {
-        sumarycznaLiczbaPrzejazdów += dziennaLiczbaPrzejazdów;
-        ilePasażerów = 0;
-        for (ZbiórPasażerów stos : pasażerowie) {
-            stos.opróżnij();
+    public void endDay() {
+        totalNumberOfRides += dailyNumberOfRides;
+        numberOfPassengers = 0;
+        for (PassengersSet stos : passengers) {
+            stos.clear();
         }
     }
 
-    public int dziennaLiczbaPrzejazdów() {
-        return dziennaLiczbaPrzejazdów;
+    public int dailyNumberOfRides() {
+        return dailyNumberOfRides;
     }
 
-    public int sumarycznaLiczbaPrzejazdów() {
-        return sumarycznaLiczbaPrzejazdów;
+    public int totalNumberOfRides() {
+        return totalNumberOfRides;
     }
 }

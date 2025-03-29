@@ -6,122 +6,122 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class SimulationData {
-    private Vehicle[] pojazdy;
-    private Stop[] przystanki;
-    private Passenger[] pasażerowie;
-    private Line[] linie;
-    private int liczbaDni;
-    private int pojemnośćPrzystanku;
-    private int pojemnośćTramwaju;
+    private Vehicle[] vehicles;
+    private Stop[] stops;
+    private Passenger[] passengers;
+    private Line[] lines;
+    private int numberOfDays;
+    private int stopCapacity;
+    private int vehicleCapacity;
 
     public SimulationData() {
-        pojazdy = new Vehicle[0];
-        przystanki = new Stop[0];
-        pasażerowie = new Passenger[0];
-        linie = new Line[0];
+        vehicles = new Vehicle[0];
+        stops = new Stop[0];
+        passengers = new Passenger[0];
+        lines = new Line[0];
     }
 
-    public Vehicle[] pojazdy() {
-        return pojazdy;
+    public Vehicle[] vehicles() {
+        return vehicles;
     }
 
-    public Stop[] przystanki() {
-        return przystanki;
+    public Stop[] stops() {
+        return stops;
     }
 
-    public Passenger[] pasażerowie() {
-        return pasażerowie;
+    public Passenger[] passengers() {
+        return passengers;
     }
 
-    public Line[] linie() {
-        return linie;
+    public Line[] lines() {
+        return lines;
     }
 
-    public int liczbaDni() {
-        return liczbaDni;
+    public int numberOfDays() {
+        return numberOfDays;
     }
 
     public void read() {
         Scanner scanner = new Scanner(System.in);
 
-        liczbaDni = scanner.nextInt();
+        numberOfDays = scanner.nextInt();
 
-        pojemnośćPrzystanku = scanner.nextInt();
-        int liczbaPrzystanków = scanner.nextInt();
-        przystanki = new Stop[liczbaPrzystanków];
-        for (int i = 0; i < liczbaPrzystanków; i++) {
-            String nazwa = scanner.next();
-            przystanki[i] = new Stop(nazwa, pojemnośćPrzystanku);
+        stopCapacity = scanner.nextInt();
+        int numberOfStops = scanner.nextInt();
+        stops = new Stop[numberOfStops];
+        for (int i = 0; i < numberOfStops; i++) {
+            String name = scanner.next();
+            stops[i] = new Stop(name, stopCapacity);
         }
-        Arrays.sort(przystanki);
+        Arrays.sort(stops);
 
-        int liczbaPasażerów = scanner.nextInt();
-        pasażerowie = new Passenger[liczbaPasażerów];
-        for (int i = 0; i < liczbaPasażerów; i++) {
-            pasażerowie[i] = new Passenger(
-                    przystanki[RandomNumberGenerator.rand(0, liczbaPrzystanków - 1)]);
+        int numberOfPassengers = scanner.nextInt();
+        passengers = new Passenger[numberOfPassengers];
+        for (int i = 0; i < numberOfPassengers; i++) {
+            passengers[i] = new Passenger(
+                    stops[RandomNumberGenerator.rand(0, numberOfStops - 1)]);
         }
 
-        pojemnośćTramwaju = scanner.nextInt();
-        int liczbaLinii = scanner.nextInt();
-        linie = new Line[liczbaLinii];
-        for (int i = 0; i < liczbaLinii; i++) {
-            int liczbaTramwajów = scanner.nextInt();
-            int długośćTrasy = scanner.nextInt();
+        vehicleCapacity = scanner.nextInt();
+        int numberOfLines = scanner.nextInt();
+        lines = new Line[numberOfLines];
+        for (int i = 0; i < numberOfLines; i++) {
+            int numberOfVehicles = scanner.nextInt();
+            int routeLength = scanner.nextInt();
 
-            Stop[] przystankiNaTrasie = new Stop[długośćTrasy];
-            int[] czasyPrzejazdów = new int[długośćTrasy];
+            Stop[] stopsOnRoute = new Stop[routeLength];
+            int[] timetable = new int[routeLength];
 
-            for (int j = 0; j < długośćTrasy; j++) {
-                String nazwa = scanner.next();
-                czasyPrzejazdów[j] = scanner.nextInt();
-                przystankiNaTrasie[j] = znajdźPrzystanek(nazwa);
+            for (int j = 0; j < routeLength; j++) {
+                String name = scanner.next();
+                timetable[j] = scanner.nextInt();
+                stopsOnRoute[j] = findStop(name);
             }
-            linie[i] = new Line(i, new Route(przystankiNaTrasie, czasyPrzejazdów));
+            lines[i] = new Line(i, new Route(stopsOnRoute, timetable));
 
-            int początek = pojazdy.length;
-            pojazdy = Arrays.copyOf(pojazdy, pojazdy.length + liczbaTramwajów);
-            for (int j = 0; j < liczbaTramwajów; j++) {
-                pojazdy[początek + j] = new Tramwaj(linie[i], pojemnośćTramwaju);
+            int begin = vehicles.length;
+            vehicles = Arrays.copyOf(vehicles, vehicles.length + numberOfVehicles);
+            for (int j = 0; j < numberOfVehicles; j++) {
+                vehicles[begin + j] = new Tram(lines[i], vehicleCapacity);
             }
         }
         scanner.close();
     }
 
     public void print() {
-        System.out.println("Liczba dni: " + liczbaDni);
-        System.out.println("Pojemność przystanku: " + pojemnośćPrzystanku);
-        System.out.println("Liczba przystanków: " + przystanki.length);
-        if (przystanki.length > 0) {
-            System.out.println("Przystanki: ");
+        System.out.println("Number of days: " + numberOfDays);
+        System.out.println("Stop capacity: " + stopCapacity);
+        System.out.println("Number of stops: " + stops.length);
+        if (stops.length > 0) {
+            System.out.println("Stops: ");
         }
-        for (Stop stop : przystanki) {
-            stop.wypiszDane();
+        for (Stop stop : stops) {
+            stop.printData();
             System.out.println();
         }
-        System.out.println("Liczba pasażerów: " + pasażerowie.length);
-        System.out.println("Pojemność tramwaju: " + pojemnośćTramwaju);
-        System.out.println("Liczba linii: " + linie.length);
-        for (int i = 0; i < linie.length; i++) {
-            System.out.println("Linia " + i + ": ");
-            linie[i].printData();
+        System.out.println("Number of passengers: " + passengers.length);
+        System.out.println("Vehicle capacity: " + vehicleCapacity);
+        System.out.println("Number of days: " + lines.length);
+        for (int i = 0; i < lines.length; i++) {
+            System.out.println("Line " + i + ": ");
+            lines[i].printData();
             System.out.println();
         }
     }
 
-    private Stop znajdźPrzystanek(String nazwa) {
-        Stop szukany = new Stop(nazwa, liczbaDni);
-        int lewy = 0;
-        int prawy = przystanki.length - 1;
-        while (lewy < prawy) {
-            int środek = (lewy + prawy + 1) / 2;
-            if (przystanki[środek].compareTo(szukany) <= 0) {
-                lewy = środek;
+    private Stop findStop(String name) {
+        Stop stop = new Stop(name, numberOfDays);
+        int left = 0;
+        int right = stops.length - 1;
+        while (left < right) {
+            int mid = (left + right + 1) / 2;
+            if (stops[mid].compareTo(stop) <= 0) {
+                left = mid;
             } else {
-                prawy = środek - 1;
+                right = mid - 1;
             }
         }
-        assert szukany.compareTo(przystanki[lewy]) == 0 : "Nieznana nazwa przystanku";
-        return przystanki[lewy];
+        assert stop.compareTo(stops[left]) == 0 : "Unknown stop " + name;
+        return stops[left];
     }
 }

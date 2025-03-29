@@ -3,71 +3,71 @@ package symulator;
 import java.util.Arrays;
 
 public class Route {
-    private final Stop[] przystanki;
-    private final int[] czasy;
-    private final int całkowityCzasPrzejazdu;
+    private final Stop[] stops;
+    private final int[] timetable;
+    private final int totalTravelTime;
 
-    public Route(Stop[] przystanki, int[] czasy) {
-        assert przystanki.length == czasy.length : "niepoprawne tablice wejściowe";
+    public Route(Stop[] stops, int[] timetable) {
+        assert stops.length == timetable.length : "invalid input";
 
-        this.przystanki = Arrays.copyOf(przystanki, przystanki.length);
-        this.czasy = Arrays.copyOf(czasy, czasy.length);
+        this.stops = Arrays.copyOf(stops, stops.length);
+        this.timetable = Arrays.copyOf(timetable, timetable.length);
 
-        int czasPrzejazdu = 0;
-        for (int j : czasy) {
-            czasPrzejazdu += j;
+        int travelTime = 0;
+        for (int j : timetable) {
+            travelTime += j;
         }
-        this.całkowityCzasPrzejazdu = czasPrzejazdu * 2;
+        this.totalTravelTime = travelTime * 2;
     }
 
-    public Stop przystanek(int n) {
-        return przystanki[n];
+    public Stop stop(int n) {
+        return stops[n];
     }
 
-    public int przystanekPoczątkowy(boolean kierunek) {
-        return kierunek ? 0 : liczbaPrzystanków() - 1;
+    public int firstStop(boolean direction) {
+        return direction ? 0 : numberOfStops() - 1;
     }
 
-    public int przystanekKońcowy(boolean kierunek) {
-        return kierunek ? liczbaPrzystanków() - 1 : 0;
+    public int lastStop(boolean direction) {
+        return direction ? numberOfStops() - 1 : 0;
     }
 
-    public int liczbaPrzystanków() {
-        return przystanki.length;
+    public int numberOfStops() {
+        return stops.length;
     }
 
     public int totalTravelTime() {
-        return całkowityCzasPrzejazdu;
+        return totalTravelTime;
     }
 
-    public int czasPrzejazduNaNastępny(int aktualnyPrzystanek, boolean kierunek) {
-        if (kierunek) {
-            return czasy[aktualnyPrzystanek];
+    public int timeToNextStop(int currentStop, boolean direction) {
+        if (direction) {
+            return timetable[currentStop];
         } else {
-            if (aktualnyPrzystanek == 0) {
-                return czasy[czasy.length - 1];
+            if (currentStop == 0) {
+                return timetable[timetable.length - 1];
             } else {
-                return czasy[aktualnyPrzystanek - 1];
+                return timetable[currentStop - 1];
             }
         }
     }
 
-    public int następnyPrzystanek(int przystanek, boolean kierunek) {
-        if (przystanek == przystanekKońcowy(kierunek)) {
-            return przystanek;
+    public int nextStop(int currentStop, boolean direction) {
+        if (currentStop == lastStop(direction)) {
+            return currentStop;
         } else {
-            return przystanek + (kierunek ? 1 : -1);
+            return currentStop + (direction ? 1 : -1);
         }
     }
 
     public void printData() {
-        System.out.println("Liczba przystanków: " + liczbaPrzystanków());
-        for (int i = 0; i < przystanki.length; i++) {
+        System.out.println("Number of stops: " + numberOfStops());
+        for (int i = 0; i < stops.length; i++) {
             if (i != 0) {
                 System.out.print(" ");
             }
-            przystanki[i].wypiszDane();
-            System.out.print(" " + czasy[i]);
+            stops[i].printData();
+            System.out.print(" " + timetable[i]);
         }
     }
 }

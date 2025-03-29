@@ -1,50 +1,50 @@
 package symulator;
 
 public class Stop implements Comparable<Stop> {
-    private final String nazwa;
-    private final int pojemność;
+    private final String name;
+    private final int capacity;
 
-    private final ZbiórPasażerów pasażerowie;
+    private final PassengersSet passengers;
 
-    public Stop(String nazwa, int pojemność) {
-        this.nazwa = nazwa;
-        this.pojemność = pojemność;
-        pasażerowie = new TablicowyZbiórPasażerów(pojemność);
+    public Stop(String name, int capacity) {
+        this.name = name;
+        this.capacity = capacity;
+        passengers = new PassengersArraySet(capacity);
     }
 
     @Override
     public String toString() {
-        return "przystanek " + nazwa;
+        return "stop " + name;
     }
 
     @Override
     public int compareTo(Stop p) {
-        return nazwa.compareTo(p.nazwa);
+        return name.compareTo(p.name);
     }
 
     public boolean isFreeSpace() {
-        return pasażerowie.rozmiar() < pojemność;
+        return passengers.size() < capacity;
     }
 
-    public boolean pusty() {
-        return pasażerowie.pusty();
+    public boolean empty() {
+        return passengers.empty();
     }
 
     public void addPassenger(Passenger passenger) {
-        assert isFreeSpace() : "dodanie pasażera do pełnego przystanku";
-        pasażerowie.dodaj(passenger);
+        assert isFreeSpace() : "adding passenger to full stop";
+        passengers.add(passenger);
     }
 
-    public Passenger usuńPasażera() {
-        assert !pusty() : "usunięcie pasażera z pustego przystanku";
-        return pasażerowie.wyjmij();
+    public Passenger deletePassenger() {
+        assert !empty() : "deleting passenger from empty stop";
+        return passengers.get();
     }
 
-    public void zakończDzień() {
-        pasażerowie.opróżnij();
+    public void endDay() {
+        passengers.clear();
     }
 
-    public void wypiszDane() {
-        System.out.print(nazwa);
+    public void printData() {
+        System.out.print(name);
     }
 }

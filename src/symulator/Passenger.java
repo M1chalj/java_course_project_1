@@ -56,14 +56,14 @@ public class Passenger {
     public void enterVehicle(Time time, Vehicle vehicle) {
         dailyWaitingTime += time.difference(beginOfWaiting);
         beginOfWaiting = null;
-        int destinationStop = vehicle.któryPrzystanekZa(
-                RandomNumberGenerator.rand(1, vehicle.ilePrzystankówDoKońca()));
-        vehicle.dodajPasażera(this, destinationStop);
-        System.out.println(time + ": " + this + " wsiadł do pojazdu - " + vehicle +
-                " - z zamiarem dojechania na " + vehicle.przystanek(destinationStop));
+        int destinationStop = vehicle.whichStopAfter(
+                RandomNumberGenerator.rand(1, vehicle.stopsToEnd()));
+        vehicle.addPassenger(this, destinationStop);
+        System.out.println(time + ": " + this + " entered vehicle - " + vehicle +
+                " - destination: " + vehicle.stop(destinationStop));
     }
 
-    public void zakończDzień(Time time) {
+    public void endDay(Time time) {
         if (beginOfWaiting != null) {
             dailyWaitingTime += time.difference(beginOfWaiting);
         }
@@ -71,19 +71,19 @@ public class Passenger {
         totalWaitingCounter += dailyWaitingCounter;
     }
 
-    public int dziennyCzasCzekania() {
+    public int dailyWaitingTime() {
         return dailyWaitingTime;
     }
 
-    public int sumarycznyCzasCzekania() {
+    public int totalWaitingTime() {
         return totalWaitingTime;
     }
 
-    public int ileRazyDziśCzekałNaPrzystanku() {
+    public int dailyWaitingCounter() {
         return dailyWaitingCounter;
     }
 
-    public int ileRazySumarycznieCzekałNaPrzystanku() {
+    public int totalWaitingCounter() {
         return totalWaitingCounter;
     }
 }

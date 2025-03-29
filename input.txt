@@ -1,0 +1,24 @@
+3
+10
+3
+Banacha
+Krakowskie
+Centrum
+15
+5
+1
+2 3 Banacha 3 Centrum 2 Krakowskie 10
+
+
+//FORMAT DANYCH WEJŚCIOWYCH
+<Liczba dni>
+<Pojemność przystanku>
+<Liczba przystanków>
+<Nazwa przystanku 1>
+<Nazwa przystanku 2>
+...
+<Liczba pasażerów>
+<Pojemność tramwaju>
+<Liczba linii>
+<Liczba tramwajów na linii 1> <Długość trasy linii 1> <Przystanek 1 na linii 1> <Czas dojazdu do przystanku 1 na linii 1> ...
+...
